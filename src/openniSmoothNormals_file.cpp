@@ -11,7 +11,7 @@
 #include <boost/program_options.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/contrib/contrib.hpp>
+// #include <opencv2/contrib/contrib.hpp>
 
 #include <cudaPcl/depthGuidedFilter.hpp>
 #include <cudaPcl/normalExtractSimpleGpu.hpp>
