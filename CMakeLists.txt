@@ -23,12 +23,15 @@ endif()
 # add flags depending on build type
 set(CMAKE_CXX_FLAGS_RELEASE "-g -Wall -Wno-deprecated -O2 -finline-functions -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wno-deprecated")
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=\"sm_35,compute_35\")
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_60,code=sm_60 -gencode arch=compute_61,code=sm_61 -gencode arch=compute_62,code=sm_62 -gencode arch=compute_70,code=sm_70 -gencode arch=compute_72,code=sm_72)
 
 set(DRC OFF)
 set(OPENNI ON)
 
 #set(VTK_DIR /usr/bin/)
+
+set (THREADS_PREFER_PTHREAD_FLAG ON)
+find_package (Threads REQUIRED)
 
 find_package (Eigen3 REQUIRED)
 find_package (CUDA REQUIRED)
@@ -55,7 +58,7 @@ include_directories(
 
 link_directories(
   ${Boost_LIBRARY_DIRS}
-  ${VTK_LIBRARY_DIRS}
+  # ${VTK_LIBRARY_DIRS}
   /usr/lib/
 )
 
@@ -77,13 +80,13 @@ if(NOT DRC)
     )
 endif()
 
-add_executable(pclNormals ./src/pclNormals.cpp)
-target_link_libraries (pclNormals
-  boost_system boost_thread  boost_program_options
-  pcl_common pcl_io pcl_search pcl_visualization pcl_features
-  vtkCommon vtkFiltering vtkRendering
-  OpenNI XnVNite
-  opencv_core opencv_highgui)
+# add_executable(pclNormals ./src/pclNormals.cpp)
+# target_link_libraries (pclNormals
+#   boost_system boost_thread  boost_program_options
+#   pcl_common pcl_io pcl_search pcl_visualization pcl_features
+#   vtkCommon vtkFiltering vtkRendering
+#   OpenNI XnVNite
+#   opencv_core opencv_highgui)
 
 if(OPENNI)
 cuda_add_library(cudaPcl SHARED
@@ -100,85 +103,88 @@ cuda_add_library(cudaPcl SHARED
 
 target_link_libraries (cudaPcl
   boost_system boost_thread pcl_common
-  opencv_core opencv_highgui opencv_contrib opencv_imgproc
+  opencv_core opencv_highgui opencv_imgproc
   pcl_io pcl_visualization OpenNI #XnVNite
-  vtkCommon vtkFiltering vtkRendering
+  # opencv_contrib
+  # vtkCommon vtkFiltering vtkRendering
   )
   pods_install_libraries(cudaPcl)
 endif()
 
-if(NOT DRC AND OPENNI)
+# if(NOT DRC AND OPENNI)
 
-  cuda_add_executable(openniPyramid ./src/openniPyramid.cpp
-    )
-  target_link_libraries (openniPyramid
-    cudaPcl
-    boost_system boost_thread pcl_common
-    boost_program_options
-    opencv_core opencv_highgui opencv_contrib  opencv_imgproc
-    pcl_io pcl_visualization OpenNI #XnVNite
-    vtkCommon vtkFiltering vtkRendering
-    )
+#   cuda_add_executable(openniPyramid ./src/openniPyramid.cpp
+#     )
+#   target_link_libraries (openniPyramid
+#     cudaPcl
+#     boost_system boost_thread pcl_common
+#     boost_program_options
+#     opencv_core opencv_highgui opencv_imgproc
+#     # opencv_contrib
+#     pcl_io pcl_visualization OpenNI #XnVNite
+#     Threads::Threads
+#     # vtkCommon vtkFiltering vtkRendering
+#     )
 
-  cuda_add_executable(openniSmoothDepth ./src/openniSmoothDepth.cpp
-    )
-  target_link_libraries (openniSmoothDepth 
-    cudaPcl
-    boost_system boost_thread pcl_common
-    boost_program_options
-    opencv_core opencv_highgui opencv_contrib  opencv_imgproc
-    pcl_io pcl_visualization OpenNI #XnVNite
-    vtkCommon vtkFiltering vtkRendering
-    )
+#   cuda_add_executable(openniSmoothDepth ./src/openniSmoothDepth.cpp
+#     )
+#   target_link_libraries (openniSmoothDepth 
+#     cudaPcl
+#     boost_system boost_thread pcl_common
+#     boost_program_options
+#     opencv_core opencv_highgui opencv_contrib  opencv_imgproc
+#     pcl_io pcl_visualization OpenNI #XnVNite
+#     vtkCommon vtkFiltering vtkRendering
+#     )
 
-  cuda_add_executable(openniSmoothNormals ./src/openniSmoothNormals.cpp
-    )
-  target_link_libraries (openniSmoothNormals
-    cudaPcl
-    boost_system boost_thread pcl_common boost_program_options
-    opencv_core opencv_highgui opencv_contrib opencv_imgproc
-    pcl_io pcl_visualization OpenNI #XnVNite
-    vtkCommon vtkFiltering vtkRendering
-    )
+#   cuda_add_executable(openniSmoothNormals ./src/openniSmoothNormals.cpp
+#     )
+#   target_link_libraries (openniSmoothNormals
+#     cudaPcl
+#     boost_system boost_thread pcl_common boost_program_options
+#     opencv_core opencv_highgui opencv_contrib opencv_imgproc
+#     pcl_io pcl_visualization OpenNI #XnVNite
+#     vtkCommon vtkFiltering vtkRendering
+#     )
 
-  cuda_add_executable(openniSmoothNormals_file
-    ./src/openniSmoothNormals_file.cpp
-    )
-  target_link_libraries (openniSmoothNormals_file
-    cudaPcl
-    boost_system boost_thread pcl_common boost_program_options
-    opencv_core opencv_highgui opencv_contrib opencv_imgproc
-    pcl_io pcl_visualization OpenNI #XnVNite
-    vtkCommon vtkFiltering vtkRendering
-    )
+#   cuda_add_executable(openniSmoothNormals_file
+#     ./src/openniSmoothNormals_file.cpp
+#     )
+#   target_link_libraries (openniSmoothNormals_file
+#     cudaPcl
+#     boost_system boost_thread pcl_common boost_program_options
+#     opencv_core opencv_highgui opencv_contrib opencv_imgproc
+#     pcl_io pcl_visualization OpenNI #XnVNite
+#     vtkCommon vtkFiltering vtkRendering
+#     )
 
-  add_executable(pclGrabber ./src/pclGrabber.cpp)
-  target_link_libraries (pclGrabber boost_system boost_thread
-    pcl_common pcl_io pcl_visualization OpenNI #XnVNite
-    )
+  # add_executable(pclGrabber ./src/pclGrabber.cpp)
+  # target_link_libraries (pclGrabber boost_system boost_thread
+  #   pcl_common pcl_io pcl_visualization OpenNI #XnVNite
+  #   )
 
-  add_executable(pclBenchmark ./src/pclBenchmark.cpp)
-  target_link_libraries (pclBenchmark boost_system boost_thread
-    pcl_common pcl_io pcl_visualization OpenNI #XnVNite
-    )
+  # add_executable(pclBenchmark ./src/pclBenchmark.cpp)
+  # target_link_libraries (pclBenchmark boost_system boost_thread
+  #   pcl_common pcl_io pcl_visualization OpenNI #XnVNite
+  #   )
 
-  add_executable(rndTransformPc ./src/randomlyTransformPointClouds.cpp)
-  target_link_libraries(rndTransformPc boost_system boost_thread
-    boost_program_options
-    pcl_common pcl_io pcl_visualization)
+  # add_executable(rndTransformPc ./src/randomlyTransformPointClouds.cpp)
+  # target_link_libraries(rndTransformPc boost_system boost_thread
+  #   boost_program_options
+  #   pcl_common pcl_io pcl_visualization)
 
-  add_executable(pclAddNoiseOutliers ./src/pclAddNoiseOutliers.cpp)
-  target_link_libraries(pclAddNoiseOutliers boost_system boost_thread
-    boost_random boost_program_options
-  pcl_common pcl_io pcl_search pcl_visualization pcl_features
-  vtkCommon vtkFiltering vtkRendering)
+  # add_executable(pclAddNoiseOutliers ./src/pclAddNoiseOutliers.cpp)
+  # target_link_libraries(pclAddNoiseOutliers boost_system boost_thread
+  #   boost_random boost_program_options
+  # pcl_common pcl_io pcl_search pcl_visualization pcl_features
+  # vtkCommon vtkFiltering vtkRendering)
 
-  pods_install_executables(pclGrabber openniSmoothNormals openniPyramid
-    openniSmoothNormals_file
-    pclBenchmark 
-    pclAddNoiseOutliers
-    openniSmoothDepth)
-endif()
+  # pods_install_executables(pclGrabber openniSmoothNormals openniPyramid
+  #   openniSmoothNormals_file
+  #   pclBenchmark 
+  #   pclAddNoiseOutliers
+  #   openniSmoothDepth)
+# endif()
 #add_executable(freenect2Vis ./src/freenect2Visualizer.cpp)
 #target_link_libraries (freenect2Vis
 #  boost_system boost_thread freenect2 boost_program_options
@@ -186,26 +192,26 @@ endif()
 #  )
 
 
-  add_executable(renderPcFromPc ./src/renderPcFromPc.cpp
-    ./src/pinhole.cpp)
-  target_link_libraries (renderPcFromPc boost_system boost_thread
-    boost_program_options pcl_filters
-    pcl_common  pcl_features pcl_search pcl_io pcl_visualization)
+  # add_executable(renderPcFromPc ./src/renderPcFromPc.cpp
+  #   ./src/pinhole.cpp)
+  # target_link_libraries (renderPcFromPc boost_system boost_thread
+  #   boost_program_options pcl_filters
+  #   pcl_common  pcl_features pcl_search pcl_io pcl_visualization)
 
-  add_executable(rndTransformPc ./src/randomlyTransformPointClouds.cpp)
-  target_link_libraries(rndTransformPc boost_system boost_thread
-    boost_program_options
-    pcl_common pcl_io pcl_visualization )
+  # add_executable(rndTransformPc ./src/randomlyTransformPointClouds.cpp)
+  # target_link_libraries(rndTransformPc boost_system boost_thread
+  #   boost_program_options
+  #   pcl_common pcl_io pcl_visualization )
 
-  cuda_add_executable(testSurfelRender 
-    ./test/surfelRender.cpp)
-  target_link_libraries(testSurfelRender
-    jsCore cudaPcl 
-    ${OpenCV_LIBS}
-    )
+  # cuda_add_executable(testSurfelRender 
+  #   ./test/surfelRender.cpp)
+  # target_link_libraries(testSurfelRender
+  #   jsCore cudaPcl 
+  #   ${OpenCV_LIBS}
+  #   )
 
-  pods_install_executables( rndTransformPc renderPcFromPc
-    testSurfelRender)
+  # pods_install_executables( rndTransformPc renderPcFromPc
+  #   testSurfelRender)
 
 #  cuda_add_executable(realSenseSmoothNormalsGpuApp
 #    ./src/realSenseSmoothNormalsGpuApp.cpp
